@@ -50,7 +50,6 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> Optional[str]:
         return None
 
 # GPT Vision analysis (for scanned or image PDFs)
-# ---------------------------------------------------------------------
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def analyze_with_gpt_vision(image_bytes: bytes, client: OpenAI) -> str:
     """Analyze scanned PDF or image using GPT-4o Vision."""
@@ -104,9 +103,8 @@ Guidelines:
         logging.error(f"Vision analysis failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# ---------------------------------------------------------------------
+
 # GPT Text analysis (for extractable PDF text)
-# ---------------------------------------------------------------------
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def analyze_with_gpt_text(text: str, client: OpenAI) -> str:
     logging.info("Analyzing text-based report with GPT-4o...")
@@ -132,9 +130,7 @@ def analyze_with_gpt_text(text: str, client: OpenAI) -> str:
         logging.error(f"Text analysis failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# ---------------------------------------------------------------------
 # Main endpoint: analyze-report
-# ---------------------------------------------------------------------
 @app.post("/analyze-report")
 async def analyze_report(file: UploadFile = File(...)):
     try:
@@ -169,10 +165,6 @@ async def analyze_report(file: UploadFile = File(...)):
         logging.error(f"Analysis failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# ---------------------------------------------------------------------
-# Health check
-# ---------------------------------------------------------------------
 @app.get("/")
 async def root():
     return JSONResponse({"message": "Scanno AI backend is live."})
-
